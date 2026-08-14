@@ -11,50 +11,51 @@ Verified on the target phone:
 - Device: Infinix Note G96
 - Architecture: `aarch64` / ARM64
 - Ubuntu: 26.04 LTS inside PRoot
+- Kernel: `6.17.0-PRoot-Distro`
 - Python: 3.14.4
 - pip: 25.1.1
 - Git: 2.53.0
 - Python `venv`: working
+- CPU: 8 cores
+- RAM: 7.6 GiB total; about 1.6 GiB available at the last check
+- Swap: 4.1 GiB
 - Docker: not installed
 - Storage: approximately 11 GB free at the last check
 
-## Repository purpose
-
-This repository contains Android-specific setup, diagnostics, configuration examples, and documentation. The official Quip source is fetched from its upstream GitLab repository at install time rather than copied into this repository.
-
 ## Current implementation
 
-### 1. Environment diagnostic
+### Source and installation status
 
-```bash
-bash scripts/check_android_env.sh
-```
+- Official Quip repository cloned at `/root/quip-protocol`.
+- Checked out official **v0.2.1** (`72a7e77`, shallow clone).
+- Quip declares `requires-python = ">=3.10"`, so Python 3.14.4 satisfies the declared requirement.
+- The Android project's `.quip` virtual environment is working.
+- Quip dependencies installed successfully after a lengthy ARM64 installation.
+- `quip-miner --help` works.
+- Imports for `substrateinterface`, `blake3`, `dilithium_py`, and `numpy` were verified successfully.
 
-### 2. Install the official Quip v0.2 miner
+### Verified CLI
 
-```bash
-bash scripts/install_quip_miner.sh
-```
-
-The installer:
-
-1. Confirms ARM64.
-2. Clones or updates the official Quip protocol repository.
-3. Creates a dedicated Python virtual environment.
-4. Installs the current Quip package with `pip install -e`.
-5. Leaves the upstream source outside this Git repository.
-
-## Upstream Quip workflow
-
-The current upstream CLI uses `quip-miner`, including:
+The installed CLI exposes:
 
 ```text
 quip-miner keygen
-quip-miner bootstrap --validator <ws-endpoint>
-quip-miner cpu --validator <ws-endpoint>
+quip-miner bootstrap
+quip-miner cpu
+quip-miner gpu
+quip-miner qpu
+quip-miner identify
+quip-miner register-solver
+aquip-miner deregister-solver
 ```
 
-A validator WebSocket endpoint and an appropriately funded/registered signer are required before real mining can begin.
+(The exact commands should always be confirmed with `quip-miner --help` before use.)
+
+## Current position
+
+**READY FOR MINER CONFIGURATION — NOT MINING YET.**
+
+The next work is to inspect the official v0.2.1 command help/configuration requirements for `keygen`, `bootstrap`, and `cpu`, then identify the correct validator/network endpoint. No wallet seed phrase or private key should ever be sent to ChatGPT or committed to GitHub.
 
 ## Android safety / resource policy
 
@@ -74,9 +75,12 @@ Do not commit:
 - [x] Verify ARM64 Android/PRoot environment
 - [x] Create dedicated GitHub repository
 - [x] Add Android environment diagnostic
-- [x] Add official Quip miner installer
-- [ ] Run installer on the phone
-- [ ] Verify `quip-miner --help`
+- [x] Clone official Quip v0.2.1 source
+- [x] Create Python virtual environment
+- [x] Install Quip v0.2.1 dependencies
+- [x] Verify `quip-miner --help`
+- [x] Verify core Python imports
+- [ ] Inspect `keygen`, `bootstrap`, and `cpu` options
 - [ ] Generate a dedicated miner signer/keystore
 - [ ] Identify the appropriate Quip validator endpoint/faucet for the intended network
 - [ ] Bootstrap/register the miner
