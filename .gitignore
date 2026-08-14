@@ -1,0 +1,9 @@
+.quip/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.log
+.env
+.quip-miner/
+quip-protocol/
