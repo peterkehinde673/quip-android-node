@@ -46,16 +46,96 @@ quip-miner gpu
 quip-miner qpu
 quip-miner identify
 quip-miner register-solver
-aquip-miner deregister-solver
+quip-miner deregister-solver
 ```
 
 (The exact commands should always be confirmed with `quip-miner --help` before use.)
 
-## Current position
+## Master checkpoint — 15 Aug 2026
 
-**READY FOR MINER CONFIGURATION — NOT MINING YET.**
+This section records the current Android/Termux work so a future session can continue without restarting completed steps.
 
-The next work is to inspect the official v0.2.1 command help/configuration requirements for `keygen`, `bootstrap`, and `cpu`, then identify the correct validator/network endpoint. No wallet seed phrase or private key should ever be sent to ChatGPT or committed to GitHub.
+### Working environment
+
+- Working source tree: `~/quip-nodes`
+- Android-specific project: `~/quip-android-node`
+- Installed executable currently resolves to `/root/quip-android-node/.quip/bin/quip-miner`
+- Python: `3.14.4`
+- pip: `26.2.1`
+- `quip-miner selftest` passed:
+  - scalecodec type-registry presets load
+  - multiprocessing spawn round-trip
+- `quip-miner resolve-mode --config ~/quip-nodes/data/config.cpu.toml` returns `cpu`.
+- Android shared storage is confirmed readable/writable from Ubuntu.
+- All diagnostic files for easy Android sharing should be saved under `/storage/emulated/0/file output/`.
+
+### Repository state
+
+The checked-out Quip infrastructure repository is:
+
+`https://gitlab.com/quip.network/nodes.quip.network.git`
+
+- Branch: `main`
+- Local commit: `f2b0236`
+- Remote commit: `f2b0236`
+- The local checkout is up to date; do not reclone, reset, or restart the completed repository setup.
+
+### CPU configuration findings
+
+Existing CPU configuration files include:
+
+- `config/localdev.cpu.toml` — disposable Docker/local-development configuration; **not** the Android standalone miner configuration.
+- `data/config.cpu.toml` — existing bundled-validator configuration.
+
+`data/config.cpu.toml` currently points to:
+
+```toml
+validators = [
+    "ws://quip-validator:9944",
+]
+```
+
+That hostname is the Docker/compose-local validator address and must not be assumed reachable from standalone Android Ubuntu.
+
+The repository documentation says miner-only nodes can use a public validator through:
+
+```text
+QUIP_VALIDATOR_RPC_URLS=wss://cpu-1.nodes.quip.network/rpc
+```
+
+However, an actual Android DNS/TCP/WebSocket test of `cpu-1.nodes.quip.network` failed with `Errno -5: No address associated with hostname`. Therefore **do not put that endpoint into the Android configuration until a currently reachable endpoint is verified**.
+
+The latest endpoint search of the checked-out repository still found `cpu-1.nodes.quip.network` as the documented/example public RPC and `bootnode-1/2/3.testnet.quip.network` as testnet bootnode addresses, but did not establish a currently reachable public miner RPC endpoint.
+
+### Current position
+
+**READY FOR VALIDATOR ENDPOINT VERIFICATION — NOT MINING YET.**
+
+Do not yet:
+
+- generate or expose a wallet seed/private key
+- commit a keystore
+- run bootstrap/registration
+- start CPU mining
+- replace the existing config with an unverified RPC endpoint
+
+The next task is to verify a currently reachable Quip public RPC/validator endpoint, then make the minimum Android-specific configuration change before proceeding to key generation, funding/registration, and a controlled CPU miner launch.
+
+## Diagnostic files
+
+Diagnostics created during this checkpoint include:
+
+- `quip_test.txt`
+- `quip_environment.txt`
+- `quip_project_files.txt`
+- `quip_cpu_configs.txt`
+- `quip_config_validation.txt`
+- `quip_cpu_help_and_endpoints.txt`
+- `quip_public_rpc_test.txt`
+- `quip_repo_status.txt`
+- `quip_current_endpoints.txt`
+
+The source copies remain in Android shared storage under `/storage/emulated/0/file output/` where applicable. Do not commit diagnostic files containing secrets.
 
 ## Android safety / resource policy
 
@@ -80,7 +160,14 @@ Do not commit:
 - [x] Install Quip v0.2.1 dependencies
 - [x] Verify `quip-miner --help`
 - [x] Verify core Python imports
-- [ ] Inspect `keygen`, `bootstrap`, and `cpu` options
+- [x] Confirm Android shared-storage diagnostics path
+- [x] Verify Quip CLI selftest
+- [x] Verify CPU config resolution
+- [x] Verify current GitLab checkout is synchronized with origin/main
+- [x] Inspect current CPU configuration and endpoint references
+- [x] Test documented public RPC hostname — DNS failed
+- [ ] Verify a currently reachable Quip validator/public RPC endpoint
+- [ ] Inspect `keygen`, `bootstrap`, and `cpu` options for the verified network
 - [ ] Generate a dedicated miner signer/keystore
 - [ ] Identify the appropriate Quip validator endpoint/faucet for the intended network
 - [ ] Bootstrap/register the miner
